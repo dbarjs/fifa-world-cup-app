@@ -4,6 +4,9 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
   runtimeConfig: {
     // Match Source fetched at request time; override with NUXT_MATCH_SOURCE_URL.
-    matchSourceUrl: 'https://raw.githubusercontent.com/dbarjs/fifa-world-cup-app/main/data/matches.json'
+    matchSourceUrl: 'https://raw.githubusercontent.com/dbarjs/fifa-world-cup-app/main/data/matches.json',
+    // Server-side cache TTL for the Match Source fetch, also published as
+    // s-maxage; override with NUXT_MATCH_SOURCE_TTL_SECONDS.
+    matchSourceTtlSeconds: 300
   }
 })
