@@ -58,3 +58,36 @@ describe('buildCalendarFeed', () => {
     expect(bumped).toContain('SEQUENCE:3')
   })
 })
+
+describe('revision-driven updates', () => {
+  // A maintainer resolves a Placeholder Pairing by editing the Match Source
+  // and bumping revision. Calendar clients match events by UID and accept the
+  // higher SEQUENCE, so the existing event updates in place — no duplicate.
+  const placeholder = sample.find(m => m.matchNumber === 73)!
+  const resolved: Match = {
+    ...placeholder,
+    home: 'Mexico',
+    away: 'Ecuador',
+    revision: placeholder.revision + 1,
+  }
+
+  const before = unfold(buildCalendarFeed([placeholder]).toString())
+  const after = unfold(buildCalendarFeed([resolved]).toString())
+
+  it('keeps the UID stable when a Placeholder Pairing resolves', () => {
+    expect(matchUid(resolved)).toBe(matchUid(placeholder))
+    expect(before).toContain('UID:wc2026-m73@fifa-world-cup-app')
+    expect(after).toContain('UID:wc2026-m73@fifa-world-cup-app')
+  })
+
+  it('replaces the placeholder title with the resolved teams', () => {
+    expect(before).toContain('SUMMARY:2A vs 2B — Round of 32')
+    expect(after).toContain('SUMMARY:Mexico vs Ecuador — Round of 32')
+    expect(after).not.toContain('2A vs 2B')
+  })
+
+  it('increments SEQUENCE so clients accept the update', () => {
+    expect(before).toContain('SEQUENCE:0')
+    expect(after).toContain('SEQUENCE:1')
+  })
+})
