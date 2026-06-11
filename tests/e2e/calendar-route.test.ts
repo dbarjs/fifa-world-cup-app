@@ -5,7 +5,7 @@ import { fileURLToPath } from 'node:url'
 import { fetch, setup } from '@nuxt/test-utils/e2e'
 import { afterAll, describe, expect, it } from 'vitest'
 
-// Stub GitHub raw: serve the committed sample Match Source as text/plain,
+// Stub GitHub raw: serve the committed Match Source as text/plain,
 // exactly like raw.githubusercontent.com does.
 const sample = readFileSync(new URL('../../data/matches.json', import.meta.url), 'utf8')
 const stub = createServer((_req, res) => {
@@ -39,8 +39,8 @@ describe('GET /calendar.ics', () => {
     expect(unfolded).toMatch(/^BEGIN:VCALENDAR\r\n/)
     expect(unfolded.trimEnd()).toMatch(/END:VCALENDAR$/)
     expect(unfolded).toContain('VERSION:2.0')
-    expect(unfolded.match(/BEGIN:VEVENT/g)).toHaveLength(7)
-    expect(unfolded.match(/END:VEVENT/g)).toHaveLength(7)
+    expect(unfolded.match(/BEGIN:VEVENT/g)).toHaveLength(104)
+    expect(unfolded.match(/END:VEVENT/g)).toHaveLength(104)
     expect(unfolded).toContain('UID:wc2026-m73@fifa-world-cup-app')
     expect(unfolded).toContain('SUMMARY:2A vs 2B — Round of 32')
   })
