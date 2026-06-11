@@ -16,7 +16,9 @@ redeploy.
 3. **Run the tests** (`pnpm test`) — the Match Source schema tests catch
    malformed edits before they reach subscribers.
 4. **Commit and push to `main`.** Subscribed calendars pick up the change the
-   next time the client refreshes the feed.
+   next time the client refreshes the feed. The route caches the Match Source
+   server-side and at the edge for ~5 minutes (`matchSourceTtlSeconds`), so
+   allow that long for a push to reach subscribers.
 
 ## Why the revision bump matters
 
