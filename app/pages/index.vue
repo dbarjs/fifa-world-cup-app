@@ -21,6 +21,14 @@ async function copyFeedUrl() {
       title="FIFA World Cup 2026 in your calendar"
       description="Subscribe once and get all 104 matches. Knockout fixtures appear as placeholders (e.g. “1A vs 2B”) and update automatically in your calendar as teams qualify."
     >
+      <template #headline>
+        <img
+          src="/icon.png"
+          alt=""
+          class="mx-auto size-24 rounded-3xl shadow-lg ring ring-default"
+        >
+      </template>
+
       <template #links>
         <UButton
           :to="links.google"
