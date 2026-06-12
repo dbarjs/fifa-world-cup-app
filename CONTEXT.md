@@ -9,6 +9,13 @@ World Cup 2026 match as an event. Users subscribe to its URL in their calendar
 client rather than downloading it once; the client re-fetches periodically.
 Not to be confused with a static `.ics` file export.
 
+## Subscribe Link
+
+A URL that opens a calendar client's subscription flow for the Calendar Feed
+(e.g. a `webcal://` link for Apple Calendar, or Google Calendar's add-by-URL
+link). A Subscribe Link always subscribes — it never triggers a one-time
+import or download, which would freeze the feed's contents at click time.
+
 ## Match
 
 One of the 104 scheduled games of the FIFA World Cup 2026, identified by its
