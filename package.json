@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@nuxt/ui": "^4.8.2",
+    "@vite-pwa/nuxt": "1.1.1",
     "ical-generator": "^11.0.0",
     "nuxt": "^4.4.8",
     "tailwindcss": "^4.3.0",
@@ -22,6 +23,7 @@
     "@iconify-json/lucide": "^1.2.111",
     "@iconify-json/simple-icons": "^1.2.86",
     "@nuxt/test-utils": "^4.0.3",
+    "@vite-pwa/assets-generator": "^1.0.2",
     "vitest": "^4.1.8"
   }
 }
