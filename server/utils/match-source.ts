@@ -1,30 +1,4 @@
-export type Stage =
-  | 'group'
-  | 'round-of-32'
-  | 'round-of-16'
-  | 'quarter-final'
-  | 'semi-final'
-  | 'third-place-play-off'
-  | 'final'
-
-export interface Match {
-  /** Official FIFA match number, 1–104. */
-  matchNumber: number
-  stage: Stage
-  /** Group letter (A–L) for group-stage matches, null otherwise. */
-  group?: string | null
-  /** Team name, or a Placeholder Pairing side in FIFA bracket notation (e.g. "2A", "W73"). */
-  home: string
-  away: string
-  /** Kickoff in UTC, ISO 8601 with Z suffix. */
-  kickoff: string
-  venue: string
-  city: string
-  /** Fixtures only for now — always null until results are populated. */
-  score: { home: number, away: number } | null
-  /** Bumped on edits; drives the ICS SEQUENCE so clients replace the event. */
-  revision: number
-}
+import { MatchSource, type Match } from '#shared/schemas'
 
 let cache: { matches: Match[], fetchedAt: number } | null = null
 
@@ -46,11 +20,18 @@ export async function loadMatchSource(url: string, ttlMs: number): Promise<Match
     // No retry: failing fast into the stale-cache fallback beats adding
     // latency during an outage, and the next request re-attempts anyway.
     const raw = await $fetch<string>(url, { responseType: 'text', retry: 0 })
-    const matches = JSON.parse(raw) as Match[]
-    if (!Array.isArray(matches) || matches.length === 0)
-      throw new Error('Match Source is empty')
-    cache = { matches, fetchedAt: Date.now() }
-    return matches
+    // Validate the whole source at the boundary: any invalid Match rejects it
+    // all and we fall back to stale, never a partial feed (see ADR-0001). The
+    // schema also subsumes the non-empty check and decodes kickoff to a Date.
+    const result = MatchSource.safeParse(JSON.parse(raw))
+    if (!result.success) {
+      // The failure is invisible to subscribers (they keep the stale feed), so
+      // log it — otherwise a bad upstream sync hides behind a working feed.
+      console.error('Match Source failed validation', result.error.issues)
+      throw new Error('Match Source is invalid')
+    }
+    cache = { matches: result.data, fetchedAt: Date.now() }
+    return result.data
   }
   catch (cause) {
     if (cache)

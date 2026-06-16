@@ -1,6 +1,6 @@
 import type { ICalCalendar } from 'ical-generator'
 import ical from 'ical-generator'
-import type { Match, Stage } from './match-source'
+import type { Match, Stage } from '#shared/schemas'
 
 const KNOCKOUT_STAGE_LABELS: Record<Exclude<Stage, 'group'>, string> = {
   'round-of-32': 'Round of 32',
@@ -29,7 +29,8 @@ export function buildCalendarFeed(matches: Match[]): ICalCalendar {
   const calendar = ical({ name: 'FIFA World Cup 2026' })
 
   for (const match of matches) {
-    const start = new Date(match.kickoff)
+    // kickoff is already decoded to a Date by the Match Source schema.
+    const start = match.kickoff
     const durationMs = match.stage === 'group' ? GROUP_DURATION_MS : KNOCKOUT_DURATION_MS
     const location = `${match.venue}, ${match.city}`
 

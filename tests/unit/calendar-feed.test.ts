@@ -1,11 +1,13 @@
 import { readFileSync } from 'node:fs'
+import { type Match, MatchSource } from '#shared/schemas'
 import { describe, expect, it } from 'vitest'
 import { buildCalendarFeed, matchUid } from '../../server/utils/calendar-feed'
-import type { Match } from '../../server/utils/match-source'
 
-const sample = JSON.parse(
-  readFileSync(new URL('../../data/matches.json', import.meta.url), 'utf8'),
-) as Match[]
+// Decode through the schema so kickoff is a real Date, exactly as the route
+// hands it to buildCalendarFeed.
+const sample = MatchSource.parse(
+  JSON.parse(readFileSync(new URL('../../data/matches.json', import.meta.url), 'utf8')),
+)
 
 /** Undo RFC 5545 line folding so assertions can match whole properties. */
 function unfold(ics: string): string {

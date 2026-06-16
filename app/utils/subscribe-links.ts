@@ -1,11 +1,4 @@
-export interface SubscribeLinks {
-  /** The Calendar Feed URL in webcal:// form — what other clients paste. */
-  feedUrl: string
-  /** Subscribe Link for Apple Calendar (webcal:// opens its subscribe flow). */
-  apple: string
-  /** Subscribe Link for Google Calendar's add-by-URL flow. */
-  google: string
-}
+import type { SubscribeLinks } from '#shared/schemas'
 
 /**
  * Build Subscribe Links for the Calendar Feed from the origin that served
