@@ -1,6 +1,7 @@
 import type { ICalCalendar } from 'ical-generator'
-import ical from 'ical-generator'
 import type { Match, Stage } from '#shared/schemas'
+import ical from 'ical-generator'
+import { getTeamByCode } from './teams'
 
 const KNOCKOUT_STAGE_LABELS: Record<Exclude<Stage, 'group'>, string> = {
   'round-of-32': 'Round of 32',
@@ -21,6 +22,13 @@ function stageLabel(match: Match): string {
   return KNOCKOUT_STAGE_LABELS[match.stage]
 }
 
+// home/away hold a FIFA team code; resolve it to the Team's display name. A
+// Placeholder Pairing (e.g. "2A", "W73") has no Team, so fall back to the raw
+// bracket notation — exactly what subscribers should see until it resolves.
+function sideLabel(side: string): string {
+  return getTeamByCode(side)?.name ?? side
+}
+
 export function matchUid(match: Match): string {
   return `wc2026-m${match.matchNumber}@fifa-world-cup-app`
 }
@@ -39,7 +47,7 @@ export function buildCalendarFeed(matches: Match[]): ICalCalendar {
       sequence: match.revision,
       start,
       end: new Date(start.getTime() + durationMs),
-      summary: `${match.home} vs ${match.away} — ${stageLabel(match)}`,
+      summary: `${sideLabel(match.home)} vs ${sideLabel(match.away)} — ${stageLabel(match)}`,
       description: `Match ${match.matchNumber} · ${location}`,
       location,
     })

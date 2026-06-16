@@ -68,8 +68,8 @@ describe('revision-driven updates', () => {
   const placeholder = sample.find(m => m.matchNumber === 73)!
   const resolved: Match = {
     ...placeholder,
-    home: 'Mexico',
-    away: 'Ecuador',
+    home: 'MEX',
+    away: 'ECU',
     revision: placeholder.revision + 1,
   }
 

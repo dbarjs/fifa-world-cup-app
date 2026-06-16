@@ -9,8 +9,10 @@ redeploy.
 ## The workflow
 
 1. **Edit** the match entries that changed — typically resolving a Placeholder
-   Pairing (`"home": "1A"` → `"home": "Mexico"`) once a bracket slot is
-   decided, or correcting a kickoff, venue, or city.
+   Pairing (`"home": "1A"` → `"home": "MEX"`) once a bracket slot is decided, or
+   correcting a kickoff, venue, or city. `home`/`away` hold a **FIFA team code**
+   (the trigramme), not a name — look it up in `data/teams.json`. The Calendar
+   Feed resolves the code to the team's display name.
 2. **Bump `revision`** by 1 on every match you edited. Leave untouched matches
    alone.
 3. **Run the tests** (`pnpm test`) — the Match Source schema tests catch
@@ -38,5 +40,9 @@ ignoring the change or showing a duplicate.
 - **One bump per published change**, not per editing session: if you edit the
   same match twice before pushing, a single +1 is enough; if the first edit
   was already pushed, bump again.
+- **Use a FIFA code that exists in `data/teams.json`** when resolving a
+  participant — the tests reject any `home`/`away` that is neither a known Team
+  code nor a Placeholder Pairing. Add the Team to `data/teams.json` first if it
+  is missing.
 - **Keep `score` as `null`** for now — the Calendar Feed carries fixtures
   only (see `CONTEXT.md`).

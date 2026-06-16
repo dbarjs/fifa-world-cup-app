@@ -40,7 +40,7 @@ export const Match = z
     stage: Stage,
     /** Group letter (A–L) for group-stage matches, null otherwise. */
     group: z.string().regex(/^[A-L]$/).nullable(),
-    /** Team name, or a Placeholder Pairing side in bracket notation (e.g. "2A", "W73"). */
+    /** FIFA team code (see Team), or a Placeholder Pairing side in bracket notation (e.g. "2A", "W73"). */
     home: z.string().min(1),
     away: z.string().min(1),
     kickoff,
@@ -64,6 +64,25 @@ export type Match = z.infer<typeof Match>
 /** The Match Source: every Match, never empty (see CONTEXT.md → Match Source). */
 export const MatchSource = z.array(Match).min(1)
 export type MatchSource = z.infer<typeof MatchSource>
+
+/** A FIFA competitor (see CONTEXT.md → Team). Identity is the FIFA trigramme. */
+export const Team = z.object({
+  /** FIFA trigramme — the Team's identity and the Match Source join key. */
+  code: z.string().regex(/^[A-Z]{3}$/),
+  /** Display name as it appears in match summaries. */
+  name: z.string().min(1),
+  /**
+   * ISO 3166-1 alpha-2, present only when the Team maps to a sovereign country.
+   * Omitted for FIFA home nations (e.g. England, Scotland) that ISO 3166-1
+   * cannot express; consumers derive a flag from this code.
+   */
+  countryCode: z.string().regex(/^[A-Z]{2}$/).optional(),
+})
+export type Team = z.infer<typeof Team>
+
+/** The Team Reference: all Teams, keyed by FIFA trigramme (`key === team.code`). */
+export const Teams = z.record(z.string(), Team)
+export type Teams = z.infer<typeof Teams>
 
 export const SubscribeLinks = z.object({
   /** The Calendar Feed URL in webcal:// form — what other clients paste. */
