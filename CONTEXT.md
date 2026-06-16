@@ -58,8 +58,8 @@ syncing from an Upstream Fixture Source, reviewed, then committed.
 ## Upstream Fixture Source
 
 The external, public record of World Cup 2026 fixtures and results (Wikipedia)
-from which a Match's field values — resolved participants, kickoff, venue, city,
-and Result — are synced into the Match Source. The Upstream Fixture Source never
+from which a Match's field values — resolved participants (recorded as Team
+trigrammes), kickoff, venue, city, and Result — are synced into the Match Source. The Upstream Fixture Source never
 defines the Match Source's structure: it only fills and corrects field values on
 the Matches that already exist, matched by FIFA match number.
 

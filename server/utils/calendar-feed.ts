@@ -29,6 +29,17 @@ function sideLabel(side: string): string {
   return getTeamByCode(side)?.name ?? side
 }
 
+// Event title: the pairing before kickoff, the scoreline once a Result exists.
+// A bumped revision (SEQUENCE) is what makes clients replace the title in place.
+function summaryLabel(match: Match): string {
+  const home = sideLabel(match.home)
+  const away = sideLabel(match.away)
+  const pairing = match.score
+    ? `${home} ${match.score.home}–${match.score.away} ${away}`
+    : `${home} vs ${away}`
+  return `${pairing} — ${stageLabel(match)}`
+}
+
 export function matchUid(match: Match): string {
   return `wc2026-m${match.matchNumber}@fifa-world-cup-app`
 }
@@ -47,7 +58,7 @@ export function buildCalendarFeed(matches: Match[]): ICalCalendar {
       sequence: match.revision,
       start,
       end: new Date(start.getTime() + durationMs),
-      summary: `${sideLabel(match.home)} vs ${sideLabel(match.away)} — ${stageLabel(match)}`,
+      summary: summaryLabel(match),
       description: `Match ${match.matchNumber} · ${location}`,
       location,
     })
