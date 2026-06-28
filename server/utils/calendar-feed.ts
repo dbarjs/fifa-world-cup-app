@@ -1,6 +1,7 @@
 import type { ICalCalendar } from 'ical-generator'
 import type { Match, Stage } from '#shared/schemas'
 import ical from 'ical-generator'
+import { Temporal } from 'temporal-polyfill'
 import { getTeamByCode } from './teams'
 
 const KNOCKOUT_STAGE_LABELS: Record<Exclude<Stage, 'group'>, string> = {
@@ -12,9 +13,9 @@ const KNOCKOUT_STAGE_LABELS: Record<Exclude<Stage, 'group'>, string> = {
   'final': 'Final',
 }
 
-const GROUP_DURATION_MS = 2 * 60 * 60 * 1000
+const GROUP_DURATION = Temporal.Duration.from({ hours: 2 })
 // Knockouts reserve extra time and penalties.
-const KNOCKOUT_DURATION_MS = 3 * 60 * 60 * 1000
+const KNOCKOUT_DURATION = Temporal.Duration.from({ hours: 3 })
 
 function stageLabel(match: Match): string {
   if (match.stage === 'group')
@@ -48,16 +49,17 @@ export function buildCalendarFeed(matches: Match[]): ICalCalendar {
   const calendar = ical({ name: 'FIFA World Cup 2026' })
 
   for (const match of matches) {
-    // kickoff is already decoded to a Date by the Match Source schema.
+    // kickoff is already decoded to a Temporal.Instant by the Match Source
+    // schema; ical-generator accepts an Instant directly (see ADR-0004).
     const start = match.kickoff
-    const durationMs = match.stage === 'group' ? GROUP_DURATION_MS : KNOCKOUT_DURATION_MS
+    const duration = match.stage === 'group' ? GROUP_DURATION : KNOCKOUT_DURATION
     const location = `${match.venue}, ${match.city}`
 
     calendar.createEvent({
       id: matchUid(match),
       sequence: match.revision,
       start,
-      end: new Date(start.getTime() + durationMs),
+      end: start.add(duration),
       summary: summaryLabel(match),
       description: `Match ${match.matchNumber} · ${location}`,
       location,

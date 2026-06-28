@@ -1,6 +1,7 @@
 import { MatchSource, type Match } from '#shared/schemas'
+import { Temporal } from 'temporal-polyfill'
 
-let cache: { matches: Match[], fetchedAt: number } | null = null
+let cache: { matches: Match[], fetchedAt: Temporal.Instant } | null = null
 
 /**
  * Fetch the Match Source, caching it for `ttlMs` so subscriber polling does
@@ -12,7 +13,8 @@ let cache: { matches: Match[], fetchedAt: number } | null = null
  * (however stale) and only throws a 502 when there is nothing cached yet.
  */
 export async function loadMatchSource(url: string, ttlMs: number): Promise<Match[]> {
-  if (cache && Date.now() - cache.fetchedAt < ttlMs)
+  // Fresh while now is still before the cached copy's expiry instant.
+  if (cache && Temporal.Instant.compare(Temporal.Now.instant(), cache.fetchedAt.add({ milliseconds: ttlMs })) < 0)
     return cache.matches
 
   try {
@@ -22,7 +24,7 @@ export async function loadMatchSource(url: string, ttlMs: number): Promise<Match
     const raw = await $fetch<string>(url, { responseType: 'text', retry: 0 })
     // Validate the whole source at the boundary: any invalid Match rejects it
     // all and we fall back to stale, never a partial feed (see ADR-0001). The
-    // schema also subsumes the non-empty check and decodes kickoff to a Date.
+    // schema also subsumes the non-empty check and decodes kickoff to an Instant.
     const result = MatchSource.safeParse(JSON.parse(raw))
     if (!result.success) {
       // The failure is invisible to subscribers (they keep the stale feed), so
@@ -30,7 +32,7 @@ export async function loadMatchSource(url: string, ttlMs: number): Promise<Match
       console.error('Match Source failed validation', result.error.issues)
       throw new Error('Match Source is invalid')
     }
-    cache = { matches: result.data, fetchedAt: Date.now() }
+    cache = { matches: result.data, fetchedAt: Temporal.Now.instant() }
     return result.data
   }
   catch (cause) {

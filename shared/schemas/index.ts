@@ -1,3 +1,4 @@
+import { Temporal } from 'temporal-polyfill'
 import { z } from 'zod'
 
 // Single source of truth for the app's domain types. Every exported type is
@@ -19,12 +20,12 @@ export const Stage = z.enum([
 export type Stage = z.infer<typeof Stage>
 
 // Kickoff is stored as an ISO 8601 string in the Match Source and decoded to a
-// Date when the source is parsed at the boundary; code consumes the Date. The
-// encode direction (Date → ISO) is unused today — nothing serializes a Match
-// back — but comes for free with the codec.
-const kickoff = z.codec(z.iso.datetime(), z.date(), {
-  decode: isoString => new Date(isoString),
-  encode: date => date.toISOString(),
+// Temporal.Instant when the source is parsed at the boundary; code consumes the
+// Instant (see ADR-0004). The encode direction (Instant → ISO) is unused today —
+// nothing serializes a Match back — but comes for free with the codec.
+const kickoff = z.codec(z.iso.datetime(), z.instanceof(Temporal.Instant), {
+  decode: isoString => Temporal.Instant.from(isoString),
+  encode: instant => instant.toString(),
 })
 
 /** Final score of a played Match; absent (null) until a Result exists. */
@@ -33,7 +34,9 @@ const Score = z.object({
   away: z.number().int().nonnegative(),
 })
 
-export const Match = z
+// The Match object shape before the group-letter refinement, factored out so the
+// resolved MatchWithTeams output type below can reuse it.
+const MatchObject = z
   .object({
     /** Official FIFA match number, 1–104. */
     matchNumber: z.number().int().min(1).max(104),
@@ -51,6 +54,8 @@ export const Match = z
     /** Bumped on edits; drives the ICS SEQUENCE so clients replace the event. */
     revision: z.number().int().nonnegative(),
   })
+
+export const Match = MatchObject
   // A group-stage Match carries its group letter; a knockout Match has none.
   .refine(
     match => (match.stage === 'group' ? match.group !== null : match.group === null),
@@ -83,6 +88,19 @@ export type Team = z.infer<typeof Team>
 /** The Team Reference: all Teams, keyed by FIFA trigramme (`key === team.code`). */
 export const Teams = z.record(z.string(), Team)
 export type Teams = z.infer<typeof Teams>
+
+/**
+ * A Match with each side resolved to a Team, or null for a Placeholder Pairing
+ * whose participants aren't determined yet. The shape served by GET /api/matches
+ * for a calendar view; home/away keep the raw FIFA code (or bracket notation) so
+ * an unresolved side is still displayable. The group-letter refinement on Match
+ * is input validation only and isn't carried onto this output type.
+ */
+export const MatchWithTeams = MatchObject.extend({
+  homeTeam: Team.nullable(),
+  awayTeam: Team.nullable(),
+})
+export type MatchWithTeams = z.infer<typeof MatchWithTeams>
 
 export const SubscribeLinks = z.object({
   /** The Calendar Feed URL in webcal:// form — what other clients paste. */

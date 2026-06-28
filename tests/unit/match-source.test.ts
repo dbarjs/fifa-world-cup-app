@@ -1,5 +1,6 @@
 import { readFileSync } from 'node:fs'
 import { MatchSource } from '#shared/schemas'
+import { Temporal } from 'temporal-polyfill'
 import { describe, expect, it } from 'vitest'
 
 // Decoding the real Match Source through the schema is itself the validation:
@@ -11,8 +12,8 @@ const matches = MatchSource.parse(
   JSON.parse(readFileSync(new URL('../../data/matches.json', import.meta.url), 'utf8')),
 )
 
-const TOURNAMENT_START = Date.parse('2026-06-11T00:00:00Z')
-const TOURNAMENT_END = Date.parse('2026-07-20T00:00:00Z')
+const TOURNAMENT_START = Temporal.Instant.from('2026-06-11T00:00:00Z')
+const TOURNAMENT_END = Temporal.Instant.from('2026-07-20T00:00:00Z')
 
 describe('Match Source', () => {
   it('contains all 104 match numbers exactly once, in order', () => {
@@ -33,9 +34,8 @@ describe('Match Source', () => {
   })
 
   it.each(matches)('match $matchNumber kicks off during the tournament', (match) => {
-    const kickoff = match.kickoff.getTime()
-    expect(kickoff).toBeGreaterThanOrEqual(TOURNAMENT_START)
-    expect(kickoff).toBeLessThan(TOURNAMENT_END)
+    expect(Temporal.Instant.compare(match.kickoff, TOURNAMENT_START)).toBeGreaterThanOrEqual(0)
+    expect(Temporal.Instant.compare(match.kickoff, TOURNAMENT_END)).toBeLessThan(0)
   })
 
   it('has exactly six matches in each of the twelve groups', () => {

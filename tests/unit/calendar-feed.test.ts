@@ -32,11 +32,16 @@ describe('buildCalendarFeed', () => {
   })
 
   it('titles group-stage matches with teams and group', () => {
-    expect(ics).toContain('SUMMARY:Mexico vs South Africa — Group A')
+    // Synthesize the unplayed state so the title format is asserted independently
+    // of whether Match 1 has a Result in the current Match Source.
+    const fixture = sample.find(m => m.matchNumber === 1)!
+    const unplayed = unfold(buildCalendarFeed([{ ...fixture, score: null }]).toString())
+    expect(unplayed).toContain('SUMMARY:Mexico vs South Africa — Group A')
   })
 
   it('renders a Placeholder Pairing in bracket notation', () => {
-    expect(ics).toContain('SUMMARY:2A vs 2B — Round of 32')
+    // Match 89 (round of 16) is still a Placeholder Pairing after the sync.
+    expect(ics).toContain('SUMMARY:W74 vs W77 — Round of 16')
   })
 
   it('renders the scoreline once a Match has a Result', () => {
@@ -73,7 +78,9 @@ describe('revision-driven updates', () => {
   // A maintainer resolves a Placeholder Pairing by editing the Match Source
   // and bumping revision. Calendar clients match events by UID and accept the
   // higher SEQUENCE, so the existing event updates in place — no duplicate.
-  const placeholder = sample.find(m => m.matchNumber === 73)!
+  // Match 89 (round of 16) is still a Placeholder Pairing after the sync, so it
+  // models the resolution transition independently of the current data.
+  const placeholder = sample.find(m => m.matchNumber === 89)!
   const resolved: Match = {
     ...placeholder,
     home: 'MEX',
@@ -86,14 +93,14 @@ describe('revision-driven updates', () => {
 
   it('keeps the UID stable when a Placeholder Pairing resolves', () => {
     expect(matchUid(resolved)).toBe(matchUid(placeholder))
-    expect(before).toContain('UID:wc2026-m73@fifa-world-cup-app')
-    expect(after).toContain('UID:wc2026-m73@fifa-world-cup-app')
+    expect(before).toContain('UID:wc2026-m89@fifa-world-cup-app')
+    expect(after).toContain('UID:wc2026-m89@fifa-world-cup-app')
   })
 
   it('replaces the placeholder title with the resolved teams', () => {
-    expect(before).toContain('SUMMARY:2A vs 2B — Round of 32')
-    expect(after).toContain('SUMMARY:Mexico vs Ecuador — Round of 32')
-    expect(after).not.toContain('2A vs 2B')
+    expect(before).toContain('SUMMARY:W74 vs W77 — Round of 16')
+    expect(after).toContain('SUMMARY:Mexico vs Ecuador — Round of 16')
+    expect(after).not.toContain('W74 vs W77')
   })
 
   it('increments SEQUENCE so clients accept the update', () => {
@@ -105,7 +112,9 @@ describe('revision-driven updates', () => {
 describe('result-driven updates', () => {
   // A Result arriving is a published change too: the score replaces "vs" in the
   // title and the bumped revision (SEQUENCE) makes clients re-render in place.
-  const fixture = sample.find(m => m.matchNumber === 1)!
+  // Synthesize the unplayed baseline so the transition is modelled independently
+  // of whether Match 1 already carries a Result in the current Match Source.
+  const fixture: Match = { ...sample.find(m => m.matchNumber === 1)!, score: null, revision: 0 }
   const played: Match = {
     ...fixture,
     score: { home: 2, away: 1 },

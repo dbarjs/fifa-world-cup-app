@@ -26,23 +26,27 @@ await setup({
   },
 })
 
-describe('GET /calendar.ics', () => {
-  it('serves a parseable Calendar Feed built from the Match Source', async () => {
-    const response = await fetch('/calendar.ics')
+describe('GET /api/matches', () => {
+  it('serves every Match as JSON, ordered by kickoff with Teams resolved', async () => {
+    const response = await fetch('/api/matches')
     expect(response.status).toBe(200)
-    expect(response.headers.get('content-type')).toContain('text/calendar')
-    expect(response.headers.get('content-type')).toContain('charset=utf-8')
+    expect(response.headers.get('content-type')).toContain('application/json')
 
-    const body = await response.text()
-    const unfolded = body.replace(/\r\n[ \t]/g, '')
+    const body = await response.json()
+    expect(Array.isArray(body)).toBe(true)
+    expect(body).toHaveLength(104)
 
-    expect(unfolded).toMatch(/^BEGIN:VCALENDAR\r\n/)
-    expect(unfolded.trimEnd()).toMatch(/END:VCALENDAR$/)
-    expect(unfolded).toContain('VERSION:2.0')
-    expect(unfolded.match(/BEGIN:VEVENT/g)).toHaveLength(104)
-    expect(unfolded.match(/END:VEVENT/g)).toHaveLength(104)
-    expect(unfolded).toContain('UID:wc2026-m89@fifa-world-cup-app')
-    // Match 89 (round of 16) is still a Placeholder Pairing after the sync.
-    expect(unfolded).toContain('SUMMARY:W74 vs W77 — Round of 16')
+    // Sorted by kickoff ascending — the opening match (Match 1) kicks off first.
+    const kickoffs = body.map((m: { kickoff: string }) => new Date(m.kickoff).getTime())
+    expect(kickoffs).toEqual([...kickoffs].sort((a, b) => a - b))
+    expect(body[0].matchNumber).toBe(1)
+    expect(body[0].homeTeam).toMatchObject({ code: 'MEX', name: 'Mexico' })
+
+    // A Placeholder Pairing stays unresolved: raw code kept, no Team. Match 89
+    // (round of 16) is still pending once the earlier rounds have been synced.
+    const m89 = body.find((m: { matchNumber: number }) => m.matchNumber === 89)
+    expect(m89.home).toBe('W74')
+    expect(m89.homeTeam).toBeNull()
+    expect(m89.awayTeam).toBeNull()
   })
 })
