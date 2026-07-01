@@ -1088,8 +1088,11 @@
     "kickoff": "2026-06-28T19:00:00Z",
     "venue": "Los Angeles Stadium",
     "city": "Los Angeles",
-    "score": null,
-    "revision": 1
+    "score": {
+      "home": 0,
+      "away": 1
+    },
+    "revision": 2
   },
   {
     "matchNumber": 74,
@@ -1100,8 +1103,11 @@
     "kickoff": "2026-06-29T20:30:00Z",
     "venue": "Boston Stadium",
     "city": "Boston",
-    "score": null,
-    "revision": 1
+    "score": {
+      "home": 1,
+      "away": 1
+    },
+    "revision": 2
   },
   {
     "matchNumber": 75,
@@ -1112,8 +1118,11 @@
     "kickoff": "2026-06-30T01:00:00Z",
     "venue": "Estadio Monterrey",
     "city": "Monterrey",
-    "score": null,
-    "revision": 1
+    "score": {
+      "home": 1,
+      "away": 1
+    },
+    "revision": 2
   },
   {
     "matchNumber": 76,
@@ -1124,8 +1133,11 @@
     "kickoff": "2026-06-29T17:00:00Z",
     "venue": "Houston Stadium",
     "city": "Houston",
-    "score": null,
-    "revision": 1
+    "score": {
+      "home": 2,
+      "away": 1
+    },
+    "revision": 2
   },
   {
     "matchNumber": 77,
@@ -1136,8 +1148,11 @@
     "kickoff": "2026-06-30T21:00:00Z",
     "venue": "New York New Jersey Stadium",
     "city": "East Rutherford",
-    "score": null,
-    "revision": 1
+    "score": {
+      "home": 3,
+      "away": 0
+    },
+    "revision": 2
   },
   {
     "matchNumber": 78,
@@ -1148,8 +1163,11 @@
     "kickoff": "2026-06-30T17:00:00Z",
     "venue": "Dallas Stadium",
     "city": "Dallas",
-    "score": null,
-    "revision": 1
+    "score": {
+      "home": 1,
+      "away": 2
+    },
+    "revision": 2
   },
   {
     "matchNumber": 79,
@@ -1160,8 +1178,11 @@
     "kickoff": "2026-07-01T01:00:00Z",
     "venue": "Estadio Azteca",
     "city": "Mexico City",
-    "score": null,
-    "revision": 1
+    "score": {
+      "home": 2,
+      "away": 0
+    },
+    "revision": 2
   },
   {
     "matchNumber": 80,
@@ -1172,8 +1193,11 @@
     "kickoff": "2026-07-01T16:00:00Z",
     "venue": "Atlanta Stadium",
     "city": "Atlanta",
-    "score": null,
-    "revision": 1
+    "score": {
+      "home": 2,
+      "away": 1
+    },
+    "revision": 2
   },
   {
     "matchNumber": 81,
@@ -1275,49 +1299,49 @@
     "matchNumber": 89,
     "stage": "round-of-16",
     "group": null,
-    "home": "W74",
-    "away": "W77",
+    "home": "PAR",
+    "away": "FRA",
     "kickoff": "2026-07-04T21:00:00Z",
     "venue": "Philadelphia Stadium",
     "city": "Philadelphia",
     "score": null,
-    "revision": 0
+    "revision": 1
   },
   {
     "matchNumber": 90,
     "stage": "round-of-16",
     "group": null,
-    "home": "W73",
-    "away": "W75",
+    "home": "CAN",
+    "away": "MAR",
     "kickoff": "2026-07-04T17:00:00Z",
     "venue": "Houston Stadium",
     "city": "Houston",
     "score": null,
-    "revision": 0
+    "revision": 1
   },
   {
     "matchNumber": 91,
     "stage": "round-of-16",
     "group": null,
-    "home": "W76",
-    "away": "W78",
+    "home": "BRA",
+    "away": "NOR",
     "kickoff": "2026-07-05T20:00:00Z",
     "venue": "New York New Jersey Stadium",
     "city": "East Rutherford",
     "score": null,
-    "revision": 0
+    "revision": 1
   },
   {
     "matchNumber": 92,
     "stage": "round-of-16",
     "group": null,
-    "home": "W79",
-    "away": "W80",
+    "home": "MEX",
+    "away": "ENG",
     "kickoff": "2026-07-06T00:00:00Z",
     "venue": "Estadio Azteca",
     "city": "Mexico City",
     "score": null,
-    "revision": 0
+    "revision": 1
   },
   {
     "matchNumber": 93,

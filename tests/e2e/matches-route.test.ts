@@ -42,11 +42,11 @@ describe('GET /api/matches', () => {
     expect(body[0].matchNumber).toBe(1)
     expect(body[0].homeTeam).toMatchObject({ code: 'MEX', name: 'Mexico' })
 
-    // A Placeholder Pairing stays unresolved: raw code kept, no Team. Match 89
+    // A Placeholder Pairing stays unresolved: raw code kept, no Team. Match 93
     // (round of 16) is still pending once the earlier rounds have been synced.
-    const m89 = body.find((m: { matchNumber: number }) => m.matchNumber === 89)
-    expect(m89.home).toBe('W74')
-    expect(m89.homeTeam).toBeNull()
-    expect(m89.awayTeam).toBeNull()
+    const m93 = body.find((m: { matchNumber: number }) => m.matchNumber === 93)
+    expect(m93.home).toBe('W83')
+    expect(m93.homeTeam).toBeNull()
+    expect(m93.awayTeam).toBeNull()
   })
 })

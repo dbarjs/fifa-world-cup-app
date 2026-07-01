@@ -36,12 +36,12 @@ describe('buildMatchList', () => {
   })
 
   it('leaves a Placeholder Pairing unresolved — null Teams, raw code kept', () => {
-    // Match 89 (round of 16) is still a Placeholder Pairing once the earlier
+    // Match 93 (round of 16) is still a Placeholder Pairing once the earlier
     // rounds have been synced — its winners are not yet known.
-    const m89 = list.find(m => m.matchNumber === 89)!
-    expect(m89.home).toBe('W74')
-    expect(m89.away).toBe('W77')
-    expect(m89.homeTeam).toBeNull()
-    expect(m89.awayTeam).toBeNull()
+    const m93 = list.find(m => m.matchNumber === 93)!
+    expect(m93.home).toBe('W83')
+    expect(m93.away).toBe('W84')
+    expect(m93.homeTeam).toBeNull()
+    expect(m93.awayTeam).toBeNull()
   })
 })

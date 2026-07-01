@@ -41,8 +41,8 @@ describe('GET /calendar.ics', () => {
     expect(unfolded).toContain('VERSION:2.0')
     expect(unfolded.match(/BEGIN:VEVENT/g)).toHaveLength(104)
     expect(unfolded.match(/END:VEVENT/g)).toHaveLength(104)
-    expect(unfolded).toContain('UID:wc2026-m89@fifa-world-cup-app')
-    // Match 89 (round of 16) is still a Placeholder Pairing after the sync.
-    expect(unfolded).toContain('SUMMARY:W74 vs W77 — Round of 16')
+    expect(unfolded).toContain('UID:wc2026-m93@fifa-world-cup-app')
+    // Match 93 (round of 16) is still a Placeholder Pairing after the sync.
+    expect(unfolded).toContain('SUMMARY:W83 vs W84 — Round of 16')
   })
 })
